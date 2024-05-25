@@ -432,7 +432,6 @@ class GestureEmotionCompiler:
                     font, size, color_text, thickness
                 )
 
-
             cv2.imshow('RealSense Camera', im2)
         try:
             return img, emotion
@@ -450,8 +449,8 @@ class GestureEmotionCompiler:
                 self.counter["GOOD"] -= 1
                 if self.counter["GOOD"] < 1:
                     print(f'\nSave Gesture: {self.y_predict[-1]}\n')
-                    self.save_gesture(path= 'lists/gesture_txt.txt')
-                    self.save_emotions(path= 'lists/emotions_txt.txt', emt=self.emotions_list[emotion])
+                    self.save_gesture(path= 'lists/gestures.txt')
+                    self.save_emotions(path= 'lists/emotions.txt', emt=self.emotions_list[emotion])
                     self.stage = 0
                 self.counter["BAD"] = 10     # reset other counter
 
@@ -459,7 +458,7 @@ class GestureEmotionCompiler:
                 self.counter["BAD"] -= 1
                 if self.counter["BAD"] < 1:
                     self.logger.info("\nDataSet Rejected\n")
-                    self.save_emotions(path= 'lists/emotions_txt.txt', emt=self.emotions_list[emotion])
+                    self.save_emotions(path= 'lists/emotions.txt', emt=self.emotions_list[emotion])
                     self.stage = 0
                 self.counter["GOOD"] = 10
         
