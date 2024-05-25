@@ -10,7 +10,6 @@ os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 def main ():
 
     database = {'F': [], 'I': [], 'L': [], 'P': [], 'T': []}
-    file_name_build = f"Datasets\DataBase_(5-10)_16.json"
     files_name= ['Datasets\DataBase_(5-10)_G.json',
                 'Datasets\DataBase_(5-10)_H.json',
                 'Datasets\DataBase_(5-10)_L.json',

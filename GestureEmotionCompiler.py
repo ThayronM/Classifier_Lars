@@ -1,5 +1,6 @@
 import cv2
 import os
+import time
 from typing import Union
 from modules.system.SystemSettings import *
 from modules.auxiliary.FileHandler import FileHandler
@@ -246,7 +247,7 @@ class GestureEmotionCompiler:
             if self.mode == 'D':
                 cv2.putText(frame_results, f"S{self.stage} N{self.num_gest+1}: {self.y_val[self.num_gest]} D{self.dist_virtual_point:.3f}" , (25,25), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv2.LINE_AA)
             elif self.mode == 'RT':
-                cv2.putText(frame_results, f"S{self.stage} D{self.dist_virtual_point:.3f}" , (25,25), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv2.LINE_AA)
+                cv2.putText(frame_results, f"S{self.stage} D{self.dist_virtual_point:.3f}" , (25,25), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2, cv2.LINE_AA)
             cv2.imshow('RealSense Camera', frame_results)
             return  True
         except Exception as e:
@@ -347,21 +348,29 @@ class GestureEmotionCompiler:
         # Classifies the action performed
         self.y_predict.append(self.classifier.my_predict(self.sample['data_reduce_dim']))
         self.time_classifier.append(self.time_functions.toc(self.t_classifier))
-        print(f"\nThe gesture performed belongs to class {self.y_predict[-1]} and took {self.time_classifier[-1]:.3}ms to be classified.\n")
+        print(f"\nGesture: {self.y_predict[-1]}  and took {self.time_classifier[-1]:.3}ms to be classified.\n")
         
         # Resets sample data variables to default values
         self.hand_history, _, self.wrists_history, self.sample = self.data_processor.initialize_data(self.dist, self.length)
-
+        # pause
+        time.sleep(2)
 
 ##################################################################################################################################################
 ##################################################### EMOTIONS ###################################################################################
     
-    def save_txt(self, path: str):
+    def save_gesture(self, path: str):
         try:
             with open(path, 'a') as f:  # Abrir o arquivo no modo de 'append'
                 f.write(f'{self.y_predict[-1]}\n')
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"Error: {e}")
+        
+    def save_emotions(self, path: str, emt):
+        try:
+            with open(path, 'a') as f:  # Abrir o arquivo no modo de 'append'
+                f.write(f'{emt}\n')
+        except Exception as e:
+            print(f"Error: {e}")
 
 
     def get_emotion (self, img):
@@ -406,7 +415,7 @@ class GestureEmotionCompiler:
                     cv2.FONT_HERSHEY_SIMPLEX,
                     0.8,
                     (0, 255, 255),
-                    1,
+                    2,
                     cv2.LINE_AA,
                 )
                 
@@ -441,7 +450,8 @@ class GestureEmotionCompiler:
                 self.counter["GOOD"] -= 1
                 if self.counter["GOOD"] < 1:
                     print(f'\nSave Gesture: {self.y_predict[-1]}\n')
-                    self.save_txt(path= 'gesture_txt.txt')
+                    self.save_gesture(path= 'lists/gesture_txt.txt')
+                    self.save_emotions(path= 'lists/emotions_txt.txt', emt=self.emotions_list[emotion])
                     self.stage = 0
                 self.counter["BAD"] = 10     # reset other counter
 
@@ -449,6 +459,7 @@ class GestureEmotionCompiler:
                 self.counter["BAD"] -= 1
                 if self.counter["BAD"] < 1:
                     self.logger.info("\nDataSet Rejected\n")
+                    self.save_emotions(path= 'lists/emotions_txt.txt', emt=self.emotions_list[emotion])
                     self.stage = 0
                 self.counter["GOOD"] = 10
         
