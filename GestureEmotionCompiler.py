@@ -364,6 +364,9 @@ class GestureEmotionCompiler:
                 f.write(f'{self.y_predict[-1]}\n')
         except Exception as e:
             print(f"Error: {e}")
+            
+    def gesture_ros(self):
+        return self.y_predict[-1]
         
     def save_emotions(self, path: str, emt):
         try:
@@ -451,6 +454,7 @@ class GestureEmotionCompiler:
                     print(f'\nSave Gesture: {self.y_predict[-1]}\n')
                     self.save_gesture(path= 'lists/gestures.txt')
                     self.save_emotions(path= 'lists/emotions.txt', emt=self.emotions_list[emotion])
+                    self.gesture_ros()
                     self.stage = 0
                 self.counter["BAD"] = 10     # reset other counter
 
